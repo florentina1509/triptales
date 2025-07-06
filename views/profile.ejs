@@ -1,0 +1,41 @@
+<h1><%= user.username %>'s Profile</h1>
+
+<h2>My Trips</h2>
+
+<% if (trips.length === 0) { %>
+  <p>You haven't added any trips yet.</p>
+<% } else { %>
+  <div class="trip-list">
+    <% trips.forEach(trip => { %>
+      <div class="trip-card">
+        <% if (trip.photo) { %>
+          <img src="<%= trip.photo %>" alt="Trip photo">
+        <% } else { %>
+          <div class="placeholder">No image</div>
+        <% } %>
+
+        <h3><a href="/trips/<%= trip._id %>"><%= trip.title %></a></h3>
+        <p><strong>Location:</strong> <%= trip.location %></p>
+
+        <div class="trip-actions">
+          <a href="/trips/<%= trip._id %>/edit">Edit</a>
+          <form action="/trips/<%= trip._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<h2>My Wishlist</h2>
+
+<% if (user.wishlist.length === 0) { %>
+  <p>Your wishlist is empty.</p>
+<% } else { %>
+  <ul>
+    <% user.wishlist.forEach(item => { %>
+      <li><%= item %></li>
+    <% }) %>
+  </ul>
+<% } %>

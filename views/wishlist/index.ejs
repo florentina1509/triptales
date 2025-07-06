@@ -1,0 +1,24 @@
+<h1>Your Wishlist</h1>
+
+<form action="/wishlist" method="POST">
+  <label for="destination">Add a destination:</label>
+  <input type="text" name="destination" required>
+  <button type="submit">Add</button>
+</form>
+
+<% if (wishlist.length === 0) { %>
+  <p>Your wishlist is empty.</p>
+<% } else { %>
+  <ul>
+    <% wishlist.forEach((item, index) => { %>
+      <li>
+        <%= item %>
+        <form action="/wishlist/<%= index %>?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">Remove</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<a href="/">Back to Home</a>

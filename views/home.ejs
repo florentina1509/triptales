@@ -1,0 +1,33 @@
+<%- include('./partials/_navbar') %>
+
+<div class="container">
+  <h1>Explore Trips</h1>
+
+  <% if (trips.length === 0) { %>
+    <p>No trips posted yet.</p>
+  <% } else { %>
+    <div class="feed-grid">
+      <% trips.forEach(trip => { %>
+        <div class="feed-card">
+          <% if (trip.photo) { %>
+            <a href="/trips/<%= trip._id %>">
+              <img src="<%= trip.photo %>" alt="<%= trip.title %>">
+            </a>
+          <% } else { %>
+            <div class="placeholder" style="height: 200px; background: #ddd; display: flex; align-items: center; justify-content: center;">
+              No image
+            </div>
+          <% } %>
+
+          <div class="feed-info">
+            <h3><a href="/trips/<%= trip._id %>"><%= trip.title %></a></h3>
+            <p><%= trip.location %></p>
+            <p class="username">Posted by <%= trip.user.username %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('./partials/_bottomnav') %>

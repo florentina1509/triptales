@@ -1,0 +1,40 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container">
+  <h1>Add a New Trip</h1>
+
+  <form action="/trips" method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="title">Title:</label>
+      <input type="text" name="title" id="title" required>
+    </div>
+
+    <div>
+      <label for="location">Location:</label>
+      <input type="text" name="location" id="location" required>
+    </div>
+
+    <div>
+      <label for="description">Description:</label>
+      <textarea name="description" id="description"></textarea>
+    </div>
+
+    <div>
+      <label for="date">Date:</label>
+      <input type="date" name="date" id="date">
+    </div>
+
+    <div>
+      <label for="photo">Trip Photo:</label>
+      <input type="file" name="photo" id="photo" accept="image/*">
+    </div>
+
+    <div>
+      <input type="submit" value="Add Trip">
+    </div>
+  </form>
+
+  <p style="margin-top: 1rem;"><a href="/trips">Back to Trips</a></p>
+</div>
+
+<%- include('../partials/_bottomnav') %>

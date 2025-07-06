@@ -1,0 +1,37 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container">
+  <h1><%= trip.title %></h1>
+<pre><%= JSON.stringify(trip, null, 2) %></pre>
+
+  <p><strong>Location:</strong> <%= trip.location %></p>
+
+  <% if (trip.description && trip.description.trim()) { %>
+    <p><strong>Description:</strong> <%= trip.description %></p>
+  <% } %>
+
+  <p><strong>Date:</strong> 
+    <%= trip.date ? new Date(trip.date).toLocaleDateString('en-GB') : 'N/A' %>
+  </p>
+
+  <% if (trip.photo && typeof trip.photo === 'string' && trip.photo.trim() !== '') { %>
+    <div style="margin-top: 1rem;">
+      <img src="<%= trip.photo %>" alt="Photo from <%= trip.location %>" style="max-width: 100%; border-radius: 8px;" />
+    </div>
+  <% } else { %>
+    <p><em>No photo uploaded for this trip.</em></p>
+  <% } %>
+
+  <div class="trip-actions" style="margin-top: 2rem;">
+    <a href="/trips/<%= trip._id %>/edit">Edit</a>
+    <form action="/trips/<%= trip._id %>?_method=DELETE" method="POST" style="display:inline;">
+      <button type="submit">Delete</button>
+    </form>
+  </div>
+
+  <p style="margin-top: 2rem;">
+    <a href="/trips">← Back to Trips</a>
+  </p>
+</div>
+
+<%- include('../partials/_bottomnav') %>

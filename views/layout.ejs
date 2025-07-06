@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= typeof title !== 'undefined' ? title : 'TripTales' %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <%- include('./partials/_navbar') %>
+
+  <div class="container">
+    <%- body %>
+  </div>
+
+<%- include('./partials/_bottomnav') %>
+
+</body>
+</html>
