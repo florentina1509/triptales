@@ -1,0 +1,27 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container">
+  <h2>My Upcoming Trips</h2>
+
+  <a href="/upcoming/new" style="display: inline-block; margin-bottom: 1rem;">+ Add New Trip</a>
+
+  <% if (upcomingTrips.length > 0) { %>
+    <ul style="list-style: none; padding: 0;">
+      <% upcomingTrips.forEach(trip => { %>
+        <li style="margin-bottom: 1.5rem; border: 1px solid #ccc; padding: 1rem; border-radius: 8px;">
+          <h3><%= trip.destination %></h3>
+          <p><strong>Date:</strong> <%= new Date(trip.date).toLocaleDateString('en-GB') %></p>
+          <% if (trip.notes) { %>
+            <p><strong>Notes:</strong> <%= trip.notes %></p>
+          <% } %>
+          <a href="/upcoming/<%= trip._id %>/edit">Edit</a> |
+          <form method="POST" action="/upcoming/<%= trip._id %>?_method=DELETE" style="display:inline;">
+            <button type="submit" onclick="return confirm('Delete this trip?')">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>You haven't added any upcoming trips yet.</p>
+  <% } %>
+</div>

@@ -1,9 +1,16 @@
 const Trip = require('../models/Trip');
+const Comment = require('../models/Comment');
+const User = require('../models/User');
 
 // Show all trips for the current user
 async function index(req, res) {
   try {
     const trips = await Trip.find({ user: req.session.userId }).lean();
+
+    const tripsWithLikeCount = trips.map(trip => ({
+      ...trip,
+      likeCount: trip.likes ? trip.likes.length : 0
+    }));
 
     let achievements = [];
     if (trips.length >= 5) {
@@ -14,10 +21,9 @@ async function index(req, res) {
       achievements.push('New Explorer');
     }
 
-    res.render('trips/index', { trips, achievements });
+    res.render('trips/index', { trips: tripsWithLikeCount, achievements });
   } catch (err) {
-    console.error('Error loading trips:', err); // Debug log
-
+    console.error('Error loading trips:', JSON.stringify(err, null, 2));
     res.status(500).send(`
       <h2>Error loading trips</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -34,21 +40,20 @@ function newTrip(req, res) {
 // Create a new trip
 async function create(req, res) {
   try {
-    console.log('req.body:', req.body);
-    console.log('req.file:', req.file);
-
-    const imageUrl = req.file?.path || req.file?.url || '';
+    const media = (req.files || []).map(file => ({
+      url: file.path || file.url,
+      type: file.mimetype.startsWith('video') ? 'video' : 'image'
+    }));
 
     const trip = await Trip.create({
       ...req.body,
-      photo: imageUrl,
+      media,
       user: req.session.userId
     });
 
     res.redirect(`/trips/${trip._id}`);
   } catch (err) {
-    console.error('Upload error:', err); // Debug log
-
+    console.error('Error creating trip:', JSON.stringify(err, null, 2));
     res.status(500).send(`
       <h2>Error creating trip</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -57,14 +62,19 @@ async function create(req, res) {
   }
 }
 
-// Show one trip
+// Show one trip and its comments
 async function show(req, res) {
   try {
-    const trip = await Trip.findById(req.params.id).lean();
-    res.render('trips/show', { trip });
-  } catch (err) {
-    console.error('Error showing trip:', err); // Debug log
+    const trip = await Trip.findById(req.params.id).populate('likes').lean();
+    const comments = await Comment.find({ trip: trip._id }).populate('user').lean();
 
+    trip.comments = comments;
+    trip.likes = trip.likes || [];
+    trip.likeCount = trip.likes.length;
+
+    res.render('trips/show', { trip, user: req.session.user });
+  } catch (err) {
+    console.error('Error showing trip:', JSON.stringify(err, null, 2));
     res.status(404).send(`
       <h2>Trip not found</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -79,8 +89,7 @@ async function edit(req, res) {
     const trip = await Trip.findById(req.params.id).lean();
     res.render('trips/edit', { trip });
   } catch (err) {
-    console.error('Error loading trip for edit:', err); // Debug log
-
+    console.error('Error loading trip for edit:', JSON.stringify(err, null, 2));
     res.status(404).send(`
       <h2>Error loading trip for edit</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -92,11 +101,23 @@ async function edit(req, res) {
 // Update a trip
 async function update(req, res) {
   try {
-    await Trip.findByIdAndUpdate(req.params.id, req.body);
+    const media = (req.files || []).map(file => ({
+      url: file.path || file.url,
+      type: file.mimetype.startsWith('video') ? 'video' : 'image'
+    }));
+
+    const updatedTrip = {
+      ...req.body
+    };
+
+    if (media.length > 0) {
+      updatedTrip.media = media;
+    }
+
+    await Trip.findByIdAndUpdate(req.params.id, updatedTrip);
     res.redirect(`/trips/${req.params.id}`);
   } catch (err) {
-    console.error('Error updating trip:', err); // Debug log
-
+    console.error('Error updating trip:', JSON.stringify(err, null, 2));
     res.status(500).send(`
       <h2>Error updating trip</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -106,13 +127,12 @@ async function update(req, res) {
 }
 
 // Delete a trip
-async function remove(req, res) {
+async function destroy(req, res) {
   try {
     await Trip.findByIdAndDelete(req.params.id);
     res.redirect('/trips');
   } catch (err) {
-    console.error('Error deleting trip:', err); // Debug log
-
+    console.error('Error deleting trip:', JSON.stringify(err, null, 2));
     res.status(500).send(`
       <h2>Error deleting trip</h2>
       <p><strong>Message:</strong> ${err.message}</p>
@@ -128,5 +148,5 @@ module.exports = {
   show,
   edit,
   update,
-  delete: remove
+  destroy
 };

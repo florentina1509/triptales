@@ -1,6 +1,6 @@
 <%- include('../partials/_navbar') %>
 
-<div class="container">
+<div class="container" style="padding-bottom: 5rem;">
   <h1>Your Trips</h1>
 
   <% if (achievements.length > 0) { %>
@@ -12,32 +12,58 @@
     </ul>
   <% } %>
 
-  <p><a href="/trips/new">Add New Trip</a></p>
+  <p style="margin-bottom: 1rem;">
+    <a href="/trips/new">Add New Trip</a>
+  </p>
 
   <% if (trips.length === 0) { %>
     <p>You haven't added any trips yet.</p>
   <% } else { %>
     <div class="trip-list">
-      <% trips.forEach(trip => { %>
-        <div class="trip-card" style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 10px;">
+      <% trips.forEach(trip => {
+          const firstImage = trip.media?.find(m => m.type === 'image');
+          const fallbackPhoto = trip.photo?.trim();
+      %>
+        <div 
+          class="trip-card" 
+          style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1.5rem; border-radius: 10px;"
+        >
           <h3>
-            <a href="/trips/<%= trip._id %>"><%= trip.title || 'Untitled Trip' %></a>
+            <a href="/trips/<%= trip._id %>">
+              <%= trip.title || 'Untitled Trip' %>
+            </a>
           </h3>
+
           <p><strong>Location:</strong> <%= trip.location || 'Unknown' %></p>
 
           <% if (trip.date) { %>
             <p><strong>Date:</strong> <%= new Date(trip.date).toLocaleDateString('en-GB') %></p>
           <% } %>
 
-          <% if (trip.photo && typeof trip.photo === 'string' && trip.photo.trim() !== '') { %>
-            <img src="<%= trip.photo %>" alt="Trip photo" style="max-width: 100%; border-radius: 8px; margin: 1rem 0;" />
+          <% if (firstImage) { %>
+            <img 
+              src="<%= firstImage.url %>" 
+              alt="Trip photo" 
+              style="max-width: 100%; border-radius: 8px; margin: 1rem 0;"
+            />
+          <% } else if (fallbackPhoto) { %>
+            <img 
+              src="<%= fallbackPhoto %>" 
+              alt="Trip photo" 
+              style="max-width: 100%; border-radius: 8px; margin: 1rem 0;"
+            />
           <% } else { %>
             <p><em>No photo available</em></p>
           <% } %>
 
           <div class="trip-actions" style="margin-top: 1rem;">
-            <a href="/trips/<%= trip._id %>/edit">Edit</a>
-            <form action="/trips/<%= trip._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <a href="/trips/<%= trip._id %>/edit" style="margin-right: 1rem;">Edit</a>
+            <form 
+              action="/trips/<%= trip._id %>?_method=DELETE" 
+              method="POST" 
+              style="display: inline;"
+              onsubmit="return confirm('Are you sure you want to delete this trip?');"
+            >
               <button type="submit">Delete</button>
             </form>
           </div>
@@ -46,3 +72,5 @@
     </div>
   <% } %>
 </div>
+
+<%- include('../partials/_bottomnav') %>

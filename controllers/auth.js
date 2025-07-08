@@ -10,6 +10,7 @@ async function signUp(req, res) {
   try {
     const user = await User.create(req.body);
     req.session.userId = user._id;
+    req.session.user = user;
     res.redirect('/');
   } catch (err) {
     res.status(400).send('Error during sign-up: ' + err.message);
@@ -35,6 +36,7 @@ async function login(req, res) {
     }
 
     req.session.userId = user._id;
+    req.session.user = user;
     res.redirect('/');
   } catch (err) {
     res.status(500).send('Error during login: ' + err.message);

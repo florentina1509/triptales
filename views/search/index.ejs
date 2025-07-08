@@ -1,0 +1,32 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container" style="margin-top: 2rem;">
+
+  <!-- Search Bar -->
+  <form method="GET" action="/search" style="margin-bottom: 2rem; text-align: center;">
+    <input 
+      type="text" 
+      name="q" 
+      placeholder="Search trips..." 
+      value="<%= typeof query !== 'undefined' ? query : '' %>"
+      style="padding: 0.5rem; width: 80%; max-width: 300px; border: 1px solid #ccc; border-radius: 5px;"
+    />
+    <button type="submit" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">Search</button>
+  </form>
+
+  <!-- Search Results -->
+  <% if (results && results.length > 0) { %>
+    <h3>Results:</h3>
+    <ul style="list-style: none; padding: 0;">
+      <% results.forEach(trip => { %>
+        <li style="margin-bottom: 1rem;">
+          <a href="/trips/<%= trip._id %>"><strong><%= trip.title %></strong></a>
+        </li>
+      <% }) %>
+    </ul>
+  
+  <% } else if (typeof results !== 'undefined' && query) { %>
+    <p>No results found for "<%= query %>".</p>
+  <% } %>
+
+</div>

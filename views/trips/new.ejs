@@ -3,7 +3,7 @@
 <div class="container">
   <h1>Add a New Trip</h1>
 
-  <form action="/trips" method="POST" enctype="multipart/form-data">
+<form action="/trips" method="POST" enctype="multipart/form-data">
     <div>
       <label for="title">Title:</label>
       <input type="text" name="title" id="title" required>
@@ -25,8 +25,9 @@
     </div>
 
     <div>
-      <label for="photo">Trip Photo:</label>
-      <input type="file" name="photo" id="photo" accept="image/*">
+      <label for="media">Upload photos or videos</label>
+    <input type="file" name="media" multiple accept="image/*,video/*">
+
     </div>
 
     <div>

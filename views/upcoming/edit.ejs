@@ -1,0 +1,18 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container">
+  <h2>Edit Upcoming Trip</h2>
+
+  <form method="POST" action="/upcoming/<%= upcomingTrip._id %>?_method=PUT">
+    <label for="destination">Destination:</label><br />
+    <input type="text" name="destination" id="destination" value="<%= upcomingTrip.destination %>" required /><br /><br />
+
+    <label for="date">Date:</label><br />
+    <input type="date" name="date" id="date" value="<%= upcomingTrip.date.toISOString().slice(0,10) %>" required /><br /><br />
+
+    <label for="notes">Notes:</label><br />
+    <textarea name="notes" id="notes" rows="4"><%= upcomingTrip.notes %></textarea><br /><br />
+
+    <button type="submit">Save Changes</button>
+  </form>
+</div>

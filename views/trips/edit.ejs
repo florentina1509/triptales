@@ -1,19 +1,45 @@
-<h1>Edit Trip</h1>
+<%- include('../partials/_navbar') %>
 
-<form action="/trips/<%= trip._id %>?_method=PUT" method="POST">
-  <label for="title">Title:</label>
-  <input type="text" name="title" value="<%= trip.title %>" required>
+<div class="container">
+  <h1>Edit Trip</h1>
 
-  <label for="location">Location:</label>
-  <input type="text" name="location" value="<%= trip.location %>" required>
+  <form 
+    action="/trips/<%= trip._id %>?_method=PUT" 
+    method="POST" 
+    enctype="multipart/form-data"
+  >
+    <label for="title">Title:</label>
+    <input type="text" name="title" id="title" value="<%= trip.title %>" required />
 
-  <label for="description">Description:</label>
-  <textarea name="description"><%= trip.description %></textarea>
+    <label for="location">Location:</label>
+    <input type="text" name="location" id="location" value="<%= trip.location %>" required />
 
-  <label for="date">Date:</label>
-  <input type="date" name="date" value="<%= trip.date ? trip.date.toISOString().split('T')[0] : '' %>">
+    <label for="description">Description:</label>
+    <textarea name="description" id="description"><%= trip.description %></textarea>
 
-  <button type="submit">Update Trip</button>
-</form>
+    <label for="date">Date:</label>
+    <input 
+      type="date" 
+      name="date" 
+      id="date" 
+      value="<%= trip.date ? trip.date.toISOString().split('T')[0] : '' %>"
+    />
 
-<a href="/trips/<%= trip._id %>">Back to Trip</a>
+    <label for="media">Update Media:</label>
+    <input 
+      type="file" 
+      name="media" 
+      id="media" 
+      accept="image/*,video/*" 
+      multiple 
+    />
+
+    <button type="submit" style="margin-top: 1rem;">Update Trip</button>
+  </form>
+
+  <p style="margin-top: 1rem;">
+    <a href="/trips/<%= trip._id %>">← Back to Trip</a>
+  </p>
+</div>
+
+<%- include('../partials/_bottomnav') %>

@@ -1,0 +1,18 @@
+<%- include('../partials/_navbar') %>
+
+<div class="container">
+  <h2>Add Upcoming Trip</h2>
+
+  <form method="POST" action="/upcoming">
+    <label for="destination">Destination:</label><br />
+    <input type="text" name="destination" id="destination" required /><br /><br />
+
+    <label for="date">Date:</label><br />
+    <input type="date" name="date" id="date" required /><br /><br />
+
+    <label for="notes">Notes (optional):</label><br />
+    <textarea name="notes" id="notes" rows="4"></textarea><br /><br />
+
+    <button type="submit">Add Trip</button>
+  </form>
+</div>

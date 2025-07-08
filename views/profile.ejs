@@ -1,41 +1,184 @@
-<h1><%= user.username %>'s Profile</h1>
+<%- include('./partials/_navbar') %>
 
-<h2>My Trips</h2>
+<div class="container" style="padding-bottom: 5rem;">
 
-<% if (trips.length === 0) { %>
-  <p>You haven't added any trips yet.</p>
-<% } else { %>
-  <div class="trip-list">
-    <% trips.forEach(trip => { %>
-      <div class="trip-card">
-        <% if (trip.photo) { %>
-          <img src="<%= trip.photo %>" alt="Trip photo">
-        <% } else { %>
-          <div class="placeholder">No image</div>
-        <% } %>
-
-        <h3><a href="/trips/<%= trip._id %>"><%= trip.title %></a></h3>
-        <p><strong>Location:</strong> <%= trip.location %></p>
-
-        <div class="trip-actions">
-          <a href="/trips/<%= trip._id %>/edit">Edit</a>
-          <form action="/trips/<%= trip._id %>?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit">Delete</button>
-          </form>
-        </div>
+  <!-- Profile Picture + Upload -->
+  <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+    <% if (user.profilePicture) { %>
+      <img 
+        src="<%= user.profilePicture %>" 
+        alt="Profile Picture" 
+        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc;" 
+      />
+    <% } else { %>
+      <div 
+        style="width: 120px; height: 120px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #888; border: 2px solid #ccc;"
+      >
+        No Photo
       </div>
-    <% }) %>
+    <% } %>
+
+    <div>
+      <form action="/auth/profile/upload-picture" method="POST" enctype="multipart/form-data">
+        <label for="profilePicture"><strong>Upload Profile Picture</strong></label><br/>
+        <input type="file" name="profilePicture" id="profilePicture" accept="image/*" required />
+        <br />
+        <button type="submit" style="margin-top: 0.5rem;">Upload</button>
+      </form>
+
+      <% if (user.profilePicture) { %>
+        <form action="/auth/profile/remove-picture" method="POST" style="margin-top: 0.5rem;">
+          <button type="submit" style="background: #f44336; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px;">
+            Remove Profile Picture
+          </button>
+        </form>
+      <% } %>
+    </div>
   </div>
-<% } %>
 
-<h2>My Wishlist</h2>
+  <!-- Username & Social Stats -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <h1 style="margin: 0;"><%= user.username %>'s Profile</h1>
+    <small>
+      <a href="/users/<%= user._id %>/followers"><%= user.followers?.length || 0 %> followers</a> ·
+      <a href="/users/<%= user._id %>/following"><%= user.following?.length || 0 %> following</a>
+    </small>
+  </div>
 
-<% if (user.wishlist.length === 0) { %>
-  <p>Your wishlist is empty.</p>
-<% } else { %>
-  <ul>
-    <% user.wishlist.forEach(item => { %>
-      <li><%= item %></li>
-    <% }) %>
-  </ul>
-<% } %>
+  <% if (user.achievements && user.achievements.length > 0) { %>
+    <h2>Achievements</h2>
+    <ul style="list-style-type: none; padding: 0;">
+      <% user.achievements.forEach(badge => {
+           let emoji = '🏅';
+           if (badge === 'New Explorer') emoji = '🧭';
+           if (badge === 'Globetrotter') emoji = '✈️';
+           if (badge === 'World Wanderer') emoji = '🌍';
+      %>
+        <li style="margin-bottom: 0.5rem;"><%= emoji %> <%= badge %></li>
+      <% }) %>
+    </ul>
+    <hr>
+  <% } %>
+
+  <!-- TAB BUTTONS -->
+  <div style="display: flex; gap: 1rem; margin: 2rem 0;">
+    <button onclick="showSection('trips')" class="tab-btn" id="tab-trips">Trips</button>
+    <button onclick="showSection('upcoming')" class="tab-btn" id="tab-upcoming">Upcoming</button>
+    <button onclick="showSection('wishlist')" class="tab-btn" id="tab-wishlist">Wishlist</button>
+  </div>
+
+  <!-- SECTION: TRIPS -->
+  <div id="section-trips">
+    <h2>My Trips</h2>
+    <% if (!trips || trips.length === 0) { %>
+      <p>You haven't added any trips yet. <a href="/trips/new">Add one</a></p>
+    <% } else { %>
+      <div class="trip-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <% trips.forEach(trip => {
+             const firstImage = trip.media?.find(m => m.type === 'image');
+             const fallbackPhoto = trip.photo?.trim();
+        %>
+          <a href="/trips/<%= trip._id %>" style="text-decoration: none; color: inherit;">
+            <div class="trip-card" style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+              <% if (firstImage) { %>
+                <img src="<%= firstImage.url %>" alt="Trip photo" style="width: 100%; height: 180px; object-fit: cover;" />
+              <% } else if (fallbackPhoto) { %>
+                <img src="<%= fallbackPhoto %>" alt="Trip photo" style="width: 100%; height: 180px; object-fit: cover;" />
+              <% } else { %>
+                <div style="height: 180px; background: #f4f4f4; display: flex; align-items: center; justify-content: center;">No Image</div>
+              <% } %>
+              <div style="padding: 0.5rem;">
+                <p style="margin: 0;"><strong><%= trip.title %></strong></p>
+                <small><%= trip.location %></small>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- SECTION: UPCOMING -->
+  <div id="section-upcoming" style="display: none;">
+    <h2 style="display: flex; justify-content: space-between; align-items: center;">
+      Upcoming Trips
+      <a href="/upcoming/new" style="font-size: 0.9rem;">+ Add Upcoming Trip</a>
+    </h2>
+    <% if (!upcomingTrips || upcomingTrips.length === 0) { %>
+      <p>You haven't added any upcoming trips yet.</p>
+    <% } else { %>
+      <ul style="list-style-type: none; padding: 0;">
+        <% upcomingTrips.forEach(trip => { %>
+          <li style="margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
+            <p style="margin: 0;"><strong><%= trip.destination %></strong></p>
+            <small>Date: <%= new Date(trip.date).toLocaleDateString('en-GB') %></small><br />
+            <% if (trip.notes) { %><em><%= trip.notes %></em><% } %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+
+  <!-- SECTION: WISHLIST -->
+  <div id="section-wishlist" style="display: none;">
+    <h2 style="display: flex; justify-content: space-between; align-items: center;">
+      My Wishlist
+      <a href="/wishlist" style="font-size: 0.9rem;">+ Add Wishlist Item</a>
+    </h2>
+    <% if (!user.wishlist || user.wishlist.length === 0) { %>
+      <p>Your wishlist is empty. <a href="/wishlist">Add one</a></p>
+    <% } else { %>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <% user.wishlist.forEach(item => { %>
+          <div style="border: 1px solid #ccc; border-radius: 8px; padding: 1rem; background: #fff;">
+            <strong><%= item %></strong>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- SCRIPT + STYLE FOR TABS -->
+<script>
+  function showSection(section) {
+    document.getElementById('section-trips').style.display = 'none';
+    document.getElementById('section-upcoming').style.display = 'none';
+    document.getElementById('section-wishlist').style.display = 'none';
+
+    document.getElementById('tab-trips').classList.remove('active');
+    document.getElementById('tab-upcoming').classList.remove('active');
+    document.getElementById('tab-wishlist').classList.remove('active');
+
+    document.getElementById('section-' + section).style.display = 'block';
+    document.getElementById('tab-' + section).classList.add('active');
+  }
+
+  showSection('trips'); // Default
+</script>
+
+<style>
+  .tab-btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    background: #e0e0e0;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    transition: background 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    background: #d5d5d5;
+  }
+
+  .tab-btn.active {
+    background: #007bff;
+    color: #fff;
+    font-weight: 600;
+  }
+</style>
+
+<%- include('./partials/_bottomnav') %>

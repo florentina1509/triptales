@@ -1,5 +1,24 @@
-<nav class="bottom-nav">
-  <a href="/">Home</a>
-  <a href="/trips/new">Post</a>
-  <a href="/profile">Profile</a>
+<nav 
+  style="
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    padding: 0.75rem 1rem;
+    z-index: 9999;
+    font-size: 0.95rem;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  "
+>
+  <a href="/" style="text-decoration: none; color: inherit;">🏠 Home</a>
+  <a href="/search" style="text-decoration: none; color: inherit;">🔍 Search</a>
+  <a href="/trips/new" style="text-decoration: none; color: inherit;">➕ Post</a>
+  <a href="/profile" style="text-decoration: none; color: inherit;">👤 Profile</a>
 </nav>

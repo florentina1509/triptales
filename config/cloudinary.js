@@ -8,13 +8,22 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Set up multer-storage-cloudinary
+// Cloudinary storage setup for both images and videos
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'TripTales',
-    allowed_formats: ['jpg', 'jpeg', 'png'], // consistent casing
-    transformation: [{ width: 1000, crop: 'limit' }] // optional: limit image size
+  params: async (req, file) => {
+    const isVideo = file.mimetype.startsWith('video');
+
+    return {
+      folder: 'TripTales',
+      resource_type: isVideo ? 'video' : 'image',
+      allowed_formats: isVideo
+        ? ['mp4', 'mov', 'avi']
+        : ['jpg', 'jpeg', 'png', 'heic'],
+      transformation: isVideo
+        ? undefined
+        : [{ width: 1000, crop: 'limit' }]
+    };
   }
 });
 

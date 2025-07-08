@@ -1,12 +1,18 @@
-<nav>
-  <a href="/">Home</a>
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #2c3e50;">
+  <div>
+    <a href="/" style="color: white; text-decoration: none;">Home</a>
+  </div>
 
   <% if (!currentUser) { %>
-    <a href="/auth/sign-up">Sign Up</a>
-    <a href="/auth/login">Log In</a>
+    <div>
+      <a href="/auth/sign-up" style="color: white; margin-left: 1rem;">Sign Up</a>
+      <a href="/auth/login" style="color: white; margin-left: 1rem;">Log In</a>
+    </div>
   <% } else { %>
-    <a href="/trips">My Trips</a>
-    <a href="/wishlist">My Wishlist</a>
-    <a href="/auth/logout">Log Out</a>
+    <div>
+      <span style="color: #fff; margin-right: 1rem;">Hi, <%= currentUser.username %></span>
+      <a href="/profile" style="color: white; margin-right: 1rem;">Profile</a>
+      <a href="/auth/logout" style="color: white;">Log Out</a>
+    </div>
   <% } %>
 </nav>
